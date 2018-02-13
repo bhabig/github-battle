@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import api from '../utils/api';
 
 //Stateless Functional Component
-function SelectLanguage (props) {
-  let languages = [ 'All', 'JavaScript', 'Ruby', 'Elixir', 'CSS', 'Python', 'Go', 'Rust', 'R' ];
+const SelectLanguage = props => {
+  let languages = [ 'All', 'CSS', 'Elixir', 'Go', 'JavaScript', 'Node', 'Python', 'R', 'React', 'Ruby',  'Rust' ];
   return (
     <ul className="languages">
       {
@@ -28,6 +28,34 @@ SelectLanguage.propTypes = {
   onSelect: PropTypes.func.isRequired,
 }
 
+const ReposGrid = props => {
+  return (
+    <ul className="popular-list">
+      {props.repos.map((repo, index) => (
+        <li key={repo.name} className="popular-item">
+          <div className="popular-rank">#{index+1}</div>
+          <ul className="space-list-items">
+            <li>
+              <img
+                src={repo.owner.avatar_url}
+                alt={'Avatar for ' + repo.owner.login}
+                className="avatar"
+              />
+            </li>
+            <li><a href={repo.html_url}>{repo.name}</a></li>
+            <li>@{repo.owner.login}</li>
+            <li>{repo.stargazers_count} stars</li>
+          </ul>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+ReposGrid.propTypes = {
+  repos: PropTypes.arrayOf(PropTypes.object).isRequired
+}
+
 // working method #1 below:
 
 export default class Popular extends React.Component {
@@ -38,79 +66,39 @@ export default class Popular extends React.Component {
       selectedLanguage: 'All',
       repos: null,
     }
-
     this.updateLanguage = this.updateLanguage.bind(this);
-  }
-
-  updateLanguage(lang) {
-    this.setState({
-      selectedLanguage: lang,
-      repos: null,
-    });
-
-    api.fetchPopularRepos(this.state.selectedLanguage)
-      .then(resp => {
-        this.setState({
-          repos: resp,
-        });
-      });
   }
 
   componentDidMount() {
     this.updateLanguage(this.state.selectedLanguage);
   }
 
+  updateLanguage(lang) {
+    this.setState({
+      selectedLanguage: lang,
+      repos: null,
+    }, () => (api.fetchPopularRepos(this.state.selectedLanguage)
+        .then((resp) => (
+          this.setState({
+            repos: resp
+          })
+        )
+      ))
+    );
+
+  }
+
   render() {
+    console.log(this.state.repos)
     return (
       <div>
         <h1>Popular:</h1>
         <p>Selected Language: {this.state.selectedLanguage}</p>
         <SelectLanguage selectedLanguage={this.state.selectedLanguage} onSelect={this.updateLanguage} />
+        {!this.state.repos ?
+          <p>LOADING...</p> :
+          <ReposGrid repos={this.state.repos} />}
       </div>
     )
   }
 }
-
-// non-working method below:
-// *why is there a syntax error when trying to use arrow Fn syntax for updateLanguage?
-
-// export default class Popular extends React.Component {
-//   constructor(props) {
-//     super(props);
-//
-//     this.state = {
-//       selectedLanguage: 'All',
-//       repos: null,
-//     }
-//
-//     this.updateLanguage = this.updateLanguage.bind(this);
-//   }
-//
-//   updateLanguage = lang => { ****** <- get syntax error when trying to use arrow Fn ********
-//     this.setState({
-//       selectedLanguage: lang,
-//       repos: null,
-//     });
-//
-//     api.fetchPopularRepos(this.state.selectedLanguage)
-//       .then(resp => {
-//         this.setState({
-//           repos: resp,
-//         });
-//       });
-//   }
-//
-//   componentDidMount() {
-//     this.updateLanguage(this.state.selectedLanguage);
-//   }
-//
-//   render() {
-//     return (
-//       <div>
-//         <h1>Popular:</h1>
-//         <p>Selected Language: {this.state.selectedLanguage}</p>
-//         <SelectLanguage selectedLanguage={this.state.selectedLanguage} onSelect={this.updateLanguage} />
-//       </div>
-//     )
-//   }
-// }
