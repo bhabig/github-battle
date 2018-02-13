@@ -82,8 +82,6 @@ export default class Popular extends React.Component {
 //       selectedLanguage: 'All',
 //       repos: null,
 //     }
-//
-//     this.updateLanguage = this.updateLanguage.bind(this);
 //   }
 //
 //   updateLanguage = lang => { ****** <- get syntax error when trying to use arrow Fn ********
