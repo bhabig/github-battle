@@ -92,8 +92,6 @@ export default class Popular extends React.Component {
     console.log(this.state.repos)
     return (
       <div>
-        <h1>Popular:</h1>
-        <p>Selected Language: {this.state.selectedLanguage}</p>
         <SelectLanguage selectedLanguage={this.state.selectedLanguage} onSelect={this.updateLanguage} />
         {!this.state.repos ?
           <p>LOADING...</p> :
