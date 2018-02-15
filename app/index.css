@@ -93,10 +93,15 @@ a {
   text-decoration: none;
 }
 
+.row {
+  display: flex;
+  justify-content: space-around;
+}
+
 .button:active {
   transform: translateY(1px);
 }
 
 .four-o-four {
-  
+
 }
