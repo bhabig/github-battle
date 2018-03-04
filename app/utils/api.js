@@ -29,11 +29,31 @@ const handleError = error => {
   return null;
 }
 
+const getUserData = player => {
+  //axios.all takes in array of promises and fires then fn after all promises in array are resolved.
+  return axios.all([
+    getProfile(player),
+    getRepos(player)
+  ]).then(responses => {
+    let profile = responses[0];
+    let repos = responses[1];
 
+    return {
+      profile: profile,
+      score: calculateScore(profile, repos)
+    }
+  })
+}
+
+const sortPlayers = players => {
+  return players.sort((prev, current) => current.score - prev.score);
+}
 
 module.exports = {
   battle: players => {
-
+    return axios.all(players.map(getUserData))
+      .then(sortPlayers)
+      .catch(handleError)
   },
   fetchPopularRepos: language => {
     let encodedURI = window.encodeURI('https://api.github.com/search/repositories?q=stars:>1+language:'+ language + '&sort=stars&order=desc&type=Repositories');
