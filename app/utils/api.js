@@ -14,7 +14,7 @@ const getRepos = username => {
 }
 
 const getStarCount = repos => {
-  return repos.reduce((count, repo) => count + repo.stargazers_count, 0)
+  return repos.data.reduce((count, repo) => count + repo.stargazers_count, 0)
 }
 
 const calculateScore = (profile, repos) => {
@@ -37,7 +37,6 @@ const getUserData = player => {
   ]).then(responses => {
     let profile = responses[0];
     let repos = responses[1];
-
     return {
       profile: profile,
       score: calculateScore(profile, repos)
