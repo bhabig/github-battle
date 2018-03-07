@@ -5,7 +5,7 @@ import Loading from './Loading';
 
 //Stateless Functional Component
 const SelectLanguage = props => {
-  let languages = [ 'All', 'CSS', 'Elixir', 'Go', 'JavaScript', 'Node', 'Python', 'R', 'React', 'Ruby',  'Rust' ];
+  let languages = [ 'All', 'C#', '.NET', 'Elixir', 'Go', 'JavaScript', 'Node', 'PHP', 'Python', 'R', 'React', 'Ruby',  'Rust' ];
   return (
     <ul className="languages">
       {
