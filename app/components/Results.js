@@ -5,6 +5,7 @@ import Battle from './Battle';
 import {Link} from 'react-router-dom';
 import PropTypes from 'prop-types';
 import PlayerPreview from './PlayerPreview';
+import Loading from './Loading';
 
 const Profile = (props) => {
   return (
@@ -93,7 +94,7 @@ export default class Results extends React.Component {
     //waiting for response
     if(loading === true) {
       return (
-        <p>Loading...</p>
+        <Loading />
       );
     }
     //response was an error
