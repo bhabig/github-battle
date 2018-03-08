@@ -62,7 +62,6 @@ export default class Results extends React.Component {
 
   componentDidMount() {
     let players = queryString.parse(this.props.location.search);
-    debugger;
     api.battle([players.playerOneName, players.playerTwoName])
       .then(resp => {
         // if there was an error, handle it with message.

@@ -29,9 +29,16 @@ class PlayerInput extends React.Component {
   handleSubmit(e) {
     e.preventDefault();
     api.fighterRepos(this.state.username).then(resp => {
-      resp.data.length > 0 ?
-        this.props.onSubmit(this.props.id, this.state.username, true) :
+      if (resp.data.length > 0) {
+        this.props.onSubmit(this.props.id, this.state.username, true)
+      } else {
         this.props.onSubmit(this.props.id, this.state.username, false)
+        this.setState(() => {
+          return {
+            username: ''
+          }
+        })
+      }
     });
   }
 
@@ -95,7 +102,8 @@ export default class Battle extends React.Component {
     this.setState(() => {
       return {
         [id+'Name']: '',
-        [id+'Image']: null
+        [id+'Image']: null,
+        [id+'Status']: false
       }
     })
   }
@@ -119,11 +127,11 @@ export default class Battle extends React.Component {
                 label='Player One'
                 onSubmit={this.handleSubmit}
               />
-              <p style={{color: 'red'}}>
-                {(!playerOneStatus && playerOneName !== '') &&
-                  "Gotta commit to compete! This account has no commits..."
-                }
-              </p>
+              {(!playerOneStatus && playerOneName !== '') &&
+                <p style={{color: 'red'}}>
+                  Gotta commit to compete! {playerOneName}'s This account has no commits...
+                </p>
+              }
             </div>
           }
 
@@ -147,11 +155,11 @@ export default class Battle extends React.Component {
                 label='Player Two'
                 onSubmit={this.handleSubmit}
               />
-              <p style={{color: 'red'}}>
-                {(!playerTwoStatus && playerTwoName !== '') &&
-                  "Gotta commit to compete! This account has no commits..."
-                }
-              </p>
+              {(!playerTwoStatus && playerTwoName !== '') &&
+                <p style={{color: 'red'}}>
+                  Gotta commit to compete! {playerTwoName}'s account has no commits...
+                </p>
+              }
             </div>
           }
 
