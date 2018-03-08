@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import PlayerPreview from './PlayerPreview';
 const Link = require('react-router-dom').Link;
+import api from '../utils/api';
 
 class PlayerInput extends React.Component {
   constructor(props) {
@@ -13,6 +14,7 @@ class PlayerInput extends React.Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
+
 
   handleChange(e) {
     let value = e.target.value;
@@ -26,8 +28,11 @@ class PlayerInput extends React.Component {
 
   handleSubmit(e) {
     e.preventDefault();
-
-    this.props.onSubmit(this.props.id, this.state.username);
+    api.fighterRepos(this.state.username).then(resp => {
+      resp.data.length > 0 ?
+        this.props.onSubmit(this.props.id, this.state.username, true) :
+        this.props.onSubmit(this.props.id, this.state.username, false)
+    });
   }
 
   render() {
@@ -36,7 +41,7 @@ class PlayerInput extends React.Component {
         <label className='header' htmlFor='username'>
           {this.props.label}
         </label>
-        <input 
+        <input
           type='text'
           id='username'
           placeholder='github username'
@@ -67,17 +72,21 @@ export default class Battle extends React.Component {
       playerOneImage: null,
       playerOneName: '',
       playerTwoImage: null,
-      playerTwoName: ''
+      playerTwoName: '',
+      playerOneStatus: false,
+      playerTwoStatus: false
     }
 
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleReset = this.handleReset.bind(this);
   }
-  handleSubmit (id, username) {
+
+  handleSubmit (id, username, signal) {
     this.setState((prev, current) => {
       return {
         [id+'Name']: username,
-        [id+'Image']: 'https://github.com/'+username+'.png?size=200'
+        [id+'Image']: 'https://github.com/'+username+'.png?size=200',
+        [id+'Status']: signal
       }
     })
   }
@@ -97,18 +106,28 @@ export default class Battle extends React.Component {
     let playerTwoName = this.state.playerTwoName;
     let playerOneImage = this.state.playerOneImage;
     let playerTwoImage = this.state.playerTwoImage;
+    let playerOneStatus = this.state.playerOneStatus;
+    let playerTwoStatus = this.state.playerTwoStatus;
 
     return (
       <div>
         <div className='row'>
-          {!playerOneName &&
-            <PlayerInput
-              id='playerOne'
-              label='Player One'
-              onSubmit={this.handleSubmit}
-            />}
+          {!playerOneStatus &&
+            <div>
+              <PlayerInput
+                id='playerOne'
+                label='Player One'
+                onSubmit={this.handleSubmit}
+              />
+              <p style={{color: 'red'}}>
+                {(!playerOneStatus && playerOneName !== '') &&
+                  "Gotta commit to compete! This account has no commits..."
+                }
+              </p>
+            </div>
+          }
 
-          {playerOneImage !== null &&
+          {playerOneStatus &&
             <PlayerPreview
               avatar={playerOneImage}
               username={playerOneName}
@@ -121,14 +140,22 @@ export default class Battle extends React.Component {
               </button>
             </PlayerPreview>}
 
-          {!playerTwoName &&
-            <PlayerInput
-              id='playerTwo'
-              label='Player Two'
-              onSubmit={this.handleSubmit}
-            />}
+          {!playerTwoStatus &&
+            <div>
+              <PlayerInput
+                id='playerTwo'
+                label='Player Two'
+                onSubmit={this.handleSubmit}
+              />
+              <p style={{color: 'red'}}>
+                {(!playerTwoStatus && playerTwoName !== '') &&
+                  "Gotta commit to compete! This account has no commits..."
+                }
+              </p>
+            </div>
+          }
 
-          {playerTwoImage !== null &&
+          {playerTwoStatus &&
             <PlayerPreview
               avatar={playerTwoImage}
               username={playerTwoName}
@@ -142,7 +169,7 @@ export default class Battle extends React.Component {
             </PlayerPreview>}
         </div>
 
-        {playerOneImage && playerTwoImage &&
+        {playerOneStatus && playerTwoStatus &&
           <Link
             className='button'
             to={{
@@ -156,4 +183,3 @@ export default class Battle extends React.Component {
   }
 
 }
-
